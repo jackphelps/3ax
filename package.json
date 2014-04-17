@@ -1,0 +1,11 @@
+{
+    "name": "3ax",
+    "version": "0.0.0",
+    "description": "A simple API for accessing smartphone accelerometers",
+    "dependencies": {
+        "socket.io": "latest",
+        "express": "latest",
+        "nodemon": "latest"
+    },
+    "author": "Jack Phelps"
+}
