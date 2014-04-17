@@ -3,7 +3,7 @@
 * 3ax.co
 * http://github.com/jackphelps/3ax
 * Author: Jack Phelps
-* License: MIT
+* License: coming soon, see below
 
 3ax is a simple API that makes smartphone inputs -- such as accelerometer motion -- available to 3rd party applications. Developers can build browser games or interactive apps that can easily be controlled by the user's phone. 
 
@@ -38,3 +38,7 @@ For the future
 * Smoothing options to improve responsiveness (refresh primarily at motion start/end, smooth away minor wobbles)
 * Find a way to p2p the data? Doesn't look easy...
 * Touch gesture controls, e.g. scrolling
+
+License
+=======================
+I will probably release this under an MIT license, but haven't yet attached that any other license to it, so it's currently all rights reserved (sorry!). Please feel free to ask me if you have any questions or want to discuss this. 
