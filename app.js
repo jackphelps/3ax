@@ -6,6 +6,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var debug = require('debug')('my-application');
+var io = require('socket.io');
 
 var app = express();
 
@@ -55,4 +57,18 @@ app.use(function(err, req, res, next) {
 });
 
 
-module.exports = app;
+app.set('port', process.env.PORT || 3000);
+var server = app.listen(app.get('port'), function() {
+  debug('Express server listening on port ' + server.address().port);
+});
+
+// add socket listener
+var io = io.listen(server);
+
+
+io.sockets.on('connection', function (socket) {
+    console.log('hi!');
+    socket.on('message', function(data) {
+      console.log(data);
+    });
+});

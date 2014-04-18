@@ -41,4 +41,4 @@ For the future
 
 License
 =======================
-I will probably release this under an MIT license, but haven't yet attached that any other license to it, so it's currently all rights reserved (sorry!). Please feel free to ask me if you have any questions or want to discuss this. 
+I will probably release this under an MIT license, but haven't yet attached that or any other license to it, so it's currently all rights reserved (sorry!). Please feel free to ask me if you have any questions or want to discuss this. 
