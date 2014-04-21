@@ -11,9 +11,7 @@ var debug = require('debug')('my-application');
 var io = require('socket.io');
 
 var app = express();
-
-// replace with db, just for testing
-live_listeners = {}
+var liveListeners = {};
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -76,34 +74,36 @@ io.sockets.on('connection', function (socket) {
     socket.on('data', function(data) {
       /* example:
         {
-          'input_id': 'abcd1234',
+          'inputId': 'abcd1234',
           'x': 1.0,
           'y': 1.0,
           'z': 1.0,
-          'btn_a': 'down'
+          'btnA': 'down'
         }
       */
-      console.log(data);
-      //pass the data on to the client listening for that input_id
-      var listener = live_listeners[data.input_id];
-      console.log(listener)
-      io.sockets.socket(listener).emit('data', data);
+      //pass the data on to the client listening for that inputId
+      //this implementation permits only one listener at a time, which should be fine but is a known limitation. 
+      //figure users of the API can pass data around if they need...
+      if (liveListeners[data.inputId]) {
+          var listener = liveListeners[data.inputId];
+          io.sockets.socket(listener).emit('data', data);
+      };
     });
-    socket.on('register_input', function(data) {
+    socket.on('registerInput', function(data) {
       /* example:
-        { input_id: 'abcd1234' }
+        { inputId: 'abcd1234' }
       */
-      console.log('register_input: ' + data.input_id)
+      console.log('registerInput: ' + data.inputId)
       console.log(socket.id);
     });
-    socket.on('register_watcher', function(data) {
+    socket.on('registerWatcher', function(data) {
       /* example:
-        { input_id: 'abcd1234' }
+        { inputId: 'abcd1234' }
       */
-      console.log('register_watcher: ' + data.input_id)
+      console.log('registerWatcher: ' + data.inputId)
       //we want one only listener for each input, so we'll set the keys equal to the input and the value equal to the socket's session id
       console.log(socket.id);
-      live_listeners[data.input_id] = socket.id;
+      liveListeners[data.inputId] = socket.id;
 
     });
 });
