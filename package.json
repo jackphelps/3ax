@@ -1,7 +1,12 @@
 {
-  "name": "application-name",
+  "name": "3ax",
+  "author": "Jack Phelps",
   "version": "0.0.1",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jackphelps/3ax.git"
+  },
   "scripts": {
     "start": "nodemon ./app.js"
   },
