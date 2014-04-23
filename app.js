@@ -12,13 +12,17 @@ var io = require('socket.io');
 
 var app = express();
 
-// ======== stuff that will go into a database in all likelihood =======
+// store in memory for quick proxying to active listening sockets 
+// key : value => inputID : socket.id (that's the socket session ID)
 var liveListeners = {};
-// substitute for a database:
+var liveInputs = {};
+// ======== put this in redis =======
+// keep track of inputIDs assigned --- we can purge them after a certain amount of time
+// key : value => inputID : cookie
+var inputIDs = {};
+// hold valid API keys
 var apiKeys = {'exampleAPIKey':'valid'};
-// keep track of endpoints in use
-var endpoints = {};
-// =====================================================================
+// ===================================
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -88,32 +92,43 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('registerWatcher', function(data) {
-      //authenticate valid API key
+      // authenticate valid API key
       if ( apiKeys.hasOwnProperty(data.apiKey) && apiKeys[data.apiKey] === 'valid') {
-        //we want one only listener for each input, so we'll set the keys equal to the input and the value equal to the socket's session id
-        //should require listeners to specify API key and version
-        var inputID = generateInputID(4)
-        socket.emit('inputID', inputID);
-        liveListeners[inputID] = socket.id;
+        // we want one only listener for each input, so we'll set the keys equal to the input and the value equal to the socket's session id
+        // should require listeners to specify API version
+        var res = {}
+        if (data.inputID && data.cookie && inputIDs[data.inputID] === data.cookie) {
+          // if they requested a specific inputID and gave us a cookie that matches, we'll give them that one; 
+          res.inputID = data.inputID;
+          res.cookie = data.cookie;
+        } else {
+          // otherwise, we'll generate a new one and send them a new cookie
+          var inputID = generateRandomString(4)
+          var cookie = generateRandomString(26);
+          res.inputID = inputID;
+          res.cookie = cookie;
+          // save the inputID and cookie for reconnection later
+          inputIDs[inputID] = cookie;
+        }
+        liveListeners[res.inputID] = socket.id;
+        socket.emit('inputID', res);
       } else {
-        //not valid API key, let's tell them that
-        socket.emit('msg', 'invalid API key');
+        // not valid API key, let's tell them that
+        socket.emit('data', 'invalid API key');
       }
 
     });
 
     socket.on('data', function(data) {
-      //pass the data on to the client listening for that inputID
+      // pass the data on to the client listening for that inputID
       if (liveListeners.hasOwnProperty(data.inputID)) {
         var listener = liveListeners[data.inputID];
         io.sockets.socket(listener).emit('data', data);
       };
     });
-
-    //add disconnect events
 });
 
-function generateInputID(chars) {
+function generateRandomString(chars) {
   res = '';
   ar = 'abcdefghijklmnopqrstuvwxyz'.split('');
   for (var i = 0; i < chars; i++) {
@@ -121,11 +136,3 @@ function generateInputID(chars) {
   }
   return res;
 }
-
-
-
-
-
-
-
-

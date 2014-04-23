@@ -31,9 +31,26 @@ function ThreeAX() {
     var req = {
       apiKey: apiKey
     };
+    
+    // check local storage for an existing cookie and preferred inputID
+    // this is so the user doesn't have to reload their phone's browser unnecessarily 
+    // cookie prevents duplicate clients claiming the same input ID
+    if (typeof(Storage)!=="undefined") {
+      if (localStorage.inputID) {
+        req.inputID = localStorage.inputID;
+      }
+      if (localStorage.cookie) {
+        req.cookie = localStorage.cookie;
+      }
+
+    }
 
     socket.on('inputID', function (data) {
-      callback(data);
+      localStorage.setItem("cookie",data.cookie);
+      // the server returns an inputID whether we specified one or not
+      // if we specified, it will be the same one unless it was no longer available
+      localStorage.setItem("inputID",data.inputID);
+      callback(data.inputID);
     });
 
     socket.emit('registerWatcher', req);
