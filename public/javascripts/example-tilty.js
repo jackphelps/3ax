@@ -130,7 +130,6 @@
     }
 
     scene.fog = new THREE.Fog( 0xffffff, 1, 5000 );
-    scene.fog.color.setHSL( 0.6, 0, 1 );
 
     // GROUND
 

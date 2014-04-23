@@ -6,7 +6,18 @@ body {
 
 a {
   color: #00B7FF;
+  text-decoration: none;
 }
+.container {
+  margin: 6% auto;
+  padding: 5% 5%;
+  max-width:600px;
+  background-color:#eee;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  font-size:1.2em;
+  text-align: justify;
+}
+
 #canvas-container {
   position:fixed;
   top:0;
@@ -14,24 +25,32 @@ a {
   z-index:-1;
 }
 #canvas-directions {
-  border-radius: 5px;
-  padding: 25px 70px;
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.7);
-  text-align:center;
-  color: #fff;
   position: fixed;
+  padding: 25px 70px;
   top: 5px;
   left: 50%;
   -webkit-transform: translate(-50%, 0);
   -ms-transform: translate(-50%, 0);
   transform: translate(-50%, 0);
-  background:#222;
 }
-
-.report {
+#ctrl-url {
+  color:#f0f;
+}
+.game-overlay {
+  border-radius: 6px;
+  background:rgba(20,20,20,0.9);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.7);
+  text-align:center;
+  color: #fff;
+}
+.game-overlay a, .game-overlay a:visited {
+  color:#fff;
+}
+#about {
   position:fixed;
-  bottom:0;
-  left:0;
+  padding: 8px 20px;
+  bottom:5px;
+  right:5px;
 }
 .ctrl-container {
   position:fixed;

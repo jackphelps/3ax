@@ -1,7 +1,7 @@
 extends layout
 
 block content
-  #canvas-directions 
+  #canvas-directions.game-overlay 
     h1 3ax
     p A simple demo & API for using smartphone accelerometers as game controllers.
     p How to try the demo: 
@@ -9,6 +9,8 @@ block content
       | Using your phone's browser, navigate to 
       span#ctrl-url URL 
       |  and fly the flamingo.
+  #about.game-overlay
+    a(href="/about") about
 
 
   head
