@@ -11,10 +11,5 @@ router.get('/:input_id', function(req, res) {
   res.render('controller', { title: req.params.input_id});
 });
 
-// GET example for WATCHING streaming data from an input
-router.get('/watch/:input_id', function(req, res) {
-  res.render('watch', { title: req.params.input_id});
-});
-
 
 module.exports = router;
