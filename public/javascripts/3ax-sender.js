@@ -1,4 +1,14 @@
-//inputs from phones
+/* 
+------------------------------------------------------------------------------------
+  
+  This script is an example only. It's been put together with the goal of creating 
+  a great controller experience across supported devices and browsers, but I haven't 
+  attempted to support everything. 
+
+------------------------------------------------------------------------------------
+*/
+
+// ========== Device Input and socket IO ===========================================
 (function() {
   console.log('listening for device inputs')
 
@@ -20,7 +30,6 @@
         beta: Math.round(event.beta)
       }
     };
-    //$('.accel').html('current values: ' + data.orientation.gamma + ', ' + data.orientation.alpha + ', ' + data.orientation.beta);
 
     // send an absurd number of updates
     socket.emit('data', data);
@@ -50,27 +59,35 @@
 
 })();
 
+// ========== Managing device auto-sleeping ======================================================
 ///not fully working right, see gh issues
 // keep the phone from going to sleep
 (function() {
-  // for ios safari, we copy a clever hack from google -- try to open a window, then promptly stop it
-  setInterval(function () {
-    window.location.href = "/";
-    window.setTimeout(function () {
-        window.stop()
-    }, 1);
-  }, 5000);
+  if (window.DeviceOrientationEvent) {
+    // for ios safari, we copy a clever hack from google -- try to open a window, then promptly stop it
+    setInterval(function () {
+      window.location.href = "/";
+      window.setTimeout(function () {
+          window.stop()
+      }, 1);
+    }, 5000);
+  };
 })();
 
-// scroll to 1px to auto hide navbars
-// note relies on controller body height being set to greater than 100%
+// ========== Attempting to hide browser nav bars ======================================================
+// ios safari uses meta tags for fullscreen
+// the rest can use this script
 (function() {
-  $(document).ready( function() {
-
-    console.log($('.ctrl-spacer').height());
-    $('.ctrl-spacer').height($(window).height() + 2);
-    console.log($('.ctrl-spacer').height());
-    window.scrollTo(0,2)
-    console.log($(window).scrollTop());
-  });
+  function launchFullscreen(element) {
+    if(element.requestFullscreen) {
+      element.requestFullscreen();
+    } else if(element.mozRequestFullScreen) {
+      element.mozRequestFullScreen();
+    } else if(element.webkitRequestFullscreen) {
+      element.webkitRequestFullscreen();
+    } else if(element.msRequestFullscreen) {
+      element.msRequestFullscreen();
+    }
+  }
+  launchFullScreen(document.documentElement);
 })();
