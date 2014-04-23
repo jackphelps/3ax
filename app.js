@@ -11,7 +11,14 @@ var debug = require('debug')('my-application');
 var io = require('socket.io');
 
 var app = express();
+
+// ======== stuff that will go into a database in all likelihood =======
 var liveListeners = {};
+// substitute for a database:
+var apiKeys = {'exampleAPIKey':'valid'};
+// keep track of endpoints in use
+var endpoints = {};
+// =====================================================================
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -66,44 +73,59 @@ var server = app.listen(app.get('port'), function() {
 });
 
 
-// add socket listener
-var io = io.listen(server);
+// add socket listeners
+var io = io.listen(server, {log:false});
 
 io.sockets.on('connection', function (socket) {
     console.log('new socket connection');
-    socket.on('data', function(data) {
-      /* example:
-        {
-          'inputId': 'abcd1234',
-          'x': 1.0,
-          'y': 1.0,
-          'z': 1.0,
-          'btnA': 'down'
-        }
-      */
-      //pass the data on to the client listening for that inputId
-      //this implementation permits only one listener at a time, which should be fine but is a known limitation. 
-      //figure users of the API can pass data around if they need...
-      if (liveListeners[data.inputId]) {
-          var listener = liveListeners[data.inputId];
-          io.sockets.socket(listener).emit('data', data);
-      };
-    });
+
     socket.on('registerInput', function(data) {
-      /* example:
-        { inputId: 'abcd1234' }
-      */
-      console.log('registerInput: ' + data.inputId)
-      console.log(socket.id);
+      if (liveListeners.hasOwnProperty(data.inputID)) {
+        console.log('input device connected: ' + data);
+        var listener = liveListeners[data.inputID];
+        io.sockets.socket(listener).emit('data', {connection:true});
+      }
     });
+
     socket.on('registerWatcher', function(data) {
-      /* example:
-        { inputId: 'abcd1234' }
-      */
-      console.log('registerWatcher: ' + data.inputId)
-      //we want one only listener for each input, so we'll set the keys equal to the input and the value equal to the socket's session id
-      console.log(socket.id);
-      liveListeners[data.inputId] = socket.id;
+      //authenticate valid API key
+      if ( apiKeys.hasOwnProperty(data.apiKey) && apiKeys[data.apiKey] === 'valid') {
+        //we want one only listener for each input, so we'll set the keys equal to the input and the value equal to the socket's session id
+        //should require listeners to specify API key and version
+        var inputID = generateInputID(4)
+        socket.emit('inputID', inputID);
+        liveListeners[inputID] = socket.id;
+      } else {
+        //not valid API key, let's tell them that
+        socket.emit('msg', 'invalid API key');
+      }
 
     });
+
+    socket.on('data', function(data) {
+      //pass the data on to the client listening for that inputID
+      if (liveListeners.hasOwnProperty(data.inputID)) {
+        var listener = liveListeners[data.inputID];
+        io.sockets.socket(listener).emit('data', data);
+      };
+    });
+
+    //add disconnect events
 });
+
+function generateInputID(chars) {
+  res = '';
+  ar = 'abcdefghijklmnopqrstuvwxyz'.split('');
+  for (var i = 0; i < chars; i++) {
+    res += ar[ Math.floor( Math.random() * ar.length ) ];
+  }
+  return res;
+}
+
+
+
+
+
+
+
+

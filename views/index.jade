@@ -1,13 +1,47 @@
 extends layout
 
 block content
-  h1= title
-  h3 a simple API for using smartphones as controllers
-  p current connections:
-
-  p 
-    a(href="/watch/abcd1234") demo it
+  #canvas-directions 
+    h1 3ax
+    p A simple demo & API for using smartphone accelerometers as game controllers.
+    p How to try the demo: 
+      br
+      | Using your phone's browser, navigate to 
+      span#ctrl-url URL 
+      |  and fly the flamingo.
 
 
   head
+    script(type="x-shader/x-vertex" id="vertexShader").
+
+      varying vec3 vWorldPosition;
+
+      void main() {
+
+        vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
+        vWorldPosition = worldPosition.xyz;
+
+        gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+      }
+
+    script(type="x-shader/x-fragment" id="fragmentShader").
+
+      uniform vec3 topColor;
+      uniform vec3 bottomColor;
+      uniform float offset;
+      uniform float exponent;
+
+      varying vec3 vWorldPosition;
+
+      void main() {
+
+        float h = normalize( vWorldPosition + offset ).y;
+        gl_FragColor = vec4( mix( bottomColor, topColor, max( pow( h, exponent ), 0.0 ) ), 1.0 );
+
+      }
     script(src='//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.min.js')
+    script(src='/socket.io/socket.io.js')
+    script(src='http://cdnjs.cloudflare.com/ajax/libs/three.js/r61/three.js')
+    script(src='/javascripts/3ax-receiver.js')
+    script(src='/javascripts/example-tilty.js')

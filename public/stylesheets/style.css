@@ -7,8 +7,61 @@ body {
 a {
   color: #00B7FF;
 }
+#canvas-container {
+  position:fixed;
+  top:0;
+  left:0;
+  z-index:-1;
+}
+#canvas-directions {
+  border-radius: 5px;
+  padding: 25px 70px;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.7);
+  text-align:center;
+  color: #fff;
+  position: fixed;
+  top: 5px;
+  left: 50%;
+  -webkit-transform: translate(-50%, 0);
+  -ms-transform: translate(-50%, 0);
+  transform: translate(-50%, 0);
+  background:#222;
+}
+
 .report {
   position:fixed;
   bottom:0;
   left:0;
+}
+.ctrl-container {
+  position:fixed;
+  background-color:#222;
+  height:100%;
+  width:100%;
+}
+.ctrl-spacer {
+  background-color:#222;
+  height:1000px;
+}
+
+.ctrl-btn {  
+  border-radius: 99px;
+  padding: 25px 70px;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.7);
+  text-align:center;
+  color: #fff;
+  font-size:3em;
+  text-transform: capitalize;
+  font-weight: bold;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  background:linear-gradient(to top, #369 0%, #69c 100%);
+  user-select: none;
+}
+.hidden {
+  display:none;
 }

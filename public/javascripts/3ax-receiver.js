@@ -1,22 +1,52 @@
-//make a global to store controller state
-globalDeviceState = {};
+/* 
+------------------------------------------------------------------------------------
+  
+  This library is an example only. It does not serve advanced uses provided in the 
+  documentation, although it may be updated later. 
 
-//socket connection, look for data
-(function() {
-  console.log('looking for device inputs')
-
-  $('.accel').html('no readings');
-
-  //establish socket connection
-  var socket = io.connect('');
-  var inputId = $(location).attr('pathname').replace('/','');
-  var data = {
-    inputId: 'abcd1234'
-  };
-  socket.emit('registerWatcher', data);
-
-  socket.on('data', function (data) {
-    globalDeviceState = data;
+  USE:
+  var threeax = new ThreeAX();
+  threeax.requestInputID('exampleAPIKey', function(res) {
+    receivedInputID(res);
   });
-})();
+  threeax.listen(function(data) {
+    handleSocketResponses(data);
+  });
+
+  Regarding listeners: Socket.io has no global catch-all for events you aren't 
+  explicitly watching for -- be sure to check the docs to ensure you are handling 
+  all necessary responses!
+
+------------------------------------------------------------------------------------
+*/
+
+function ThreeAX() {
+
+  var socket;
+
+  this.requestInputID = function(apiKey, callback) {
+
+    // establish socket connection
+    socket = io.connect('');
+    var req = {
+      apiKey: apiKey
+    };
+
+    socket.on('inputID', function (data) {
+      callback(data);
+    });
+
+    socket.emit('registerWatcher', req);
+  }
+
+  // set up socket listeners
+  this.listen = function(callback) {
+    // controller state including button presses -- see API doc for formatting
+    socket.on('data', function (data) {
+      callback(data);
+    });
+
+  };
+
+};
 

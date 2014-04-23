@@ -1,9 +1,7 @@
 /* Example flight game for 3ax controller API */
 
 //instantiate global for device input from API script -- handle this however you want in production
-globalDeviceState = {};
 
-//make a scene
 (function() {
 
   var container,
@@ -14,19 +12,31 @@ globalDeviceState = {};
       projector,
       player,
       i, j, k;
-  var animations = [],
-      clock = new THREE.Clock();
+
+  var state       = {},
+      animations  = [];
+
+  var threeax     = new ThreeAX(),
+      clock       = new THREE.Clock();
 
   function init() {
   console.log('running setup');
 
+    // set up 3ax request and handlers
+    threeax.requestInputID('exampleAPIKey', function(response) {
+      receivedInputID(response);
+    });
+
+    threeax.listen(function(data) {
+      handleSocketResponses(data);
+    });
+
+    //make a scene
     container = document.createElement( 'div' );
+    container.setAttribute('id','canvas-container');
     document.body.appendChild( container );
 
     scene = new THREE.Scene();
-
-    scene.fog = new THREE.Fog( 0xffffff, 1, 5000 );
-    scene.fog.color.setHSL( 0.6, 0, 1 );
 
 
     // ====== Lights ================
@@ -58,7 +68,6 @@ globalDeviceState = {};
     dirLight.shadowCameraFar = 3500;
     dirLight.shadowBias = -0.0001;
     dirLight.shadowDarkness = 0.35;
-    //dirLight.shadowCameraVisible = true;
 
     // ====== player ================
     player = new THREE.Object3D();
@@ -110,17 +119,18 @@ globalDeviceState = {};
     for (i = 0; i < cubesSquared; i++) {
       for (j = 0; j < cubesSquared; j++) {
         for (k = 0; k < cubesSquared; k++) {
-          //console.log(i + ', '+ j + ', ' + k);
-
           var block = new THREE.Mesh (
             new THREE.CubeGeometry(cubeSize,cubeSize,cubeSize),
             new THREE.MeshLambertMaterial( {color: 0xffcc33})
           );
-          block.position = {x: i * cubeDist - (cubesSquared * cubeDist)/2,y: j * cubeDist, z: k * cubeDist - (cubesSquared * cubeDist)/2};
+          block.position = {x: i * cubeDist - (cubesSquared * cubeDist)/2,y: j * cubeDist + 10, z: k * cubeDist - (cubesSquared * cubeDist)/2};
           scene.add(block);
         }
       }
     }
+
+    scene.fog = new THREE.Fog( 0xffffff, 1, 5000 );
+    scene.fog.color.setHSL( 0.6, 0, 1 );
 
     // GROUND
 
@@ -149,15 +159,17 @@ globalDeviceState = {};
 
     scene.fog.color.copy( uniforms.bottomColor.value );
 
-    var skyGeo = new THREE.SphereGeometry( 10000, 32, 15 );
+    var skyGeo = new THREE.SphereGeometry( 4000, 32, 15 );
     var skyMat = new THREE.ShaderMaterial( { vertexShader: vertexShader, fragmentShader: fragmentShader, uniforms: uniforms, side: THREE.BackSide } );
 
     var sky = new THREE.Mesh( skyGeo, skyMat );
     scene.add( sky );
 
-    renderer = new THREE.WebGLRenderer({antialias:true});
-    renderer.setSize( window.innerWidth, window.innerHeight );
+    // RENDERER
 
+    renderer = new THREE.WebGLRenderer( { antialias: true } );
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    container.appendChild( renderer.domElement );
 
     renderer.setClearColor( scene.fog.color, 1 );
 
@@ -167,11 +179,22 @@ globalDeviceState = {};
     renderer.shadowMapEnabled = true;
     renderer.shadowMapCullFace = THREE.CullFaceBack;
 
+
     container.appendChild( renderer.domElement );
 
     projector = new THREE.Projector();
 
     window.addEventListener( 'resize', onWindowResize, false );
+
+    // initial player position & orientation now that everything is on screen
+    player.position.x = -700;
+    player.position.y = 135;
+    player.position.z = -50;
+
+      player.rotateOnAxis( 
+        (new THREE.Vector3(0,0,1)).normalize(), 
+        20 * Math.PI / 180
+      );
 
   }
 
@@ -207,6 +230,10 @@ globalDeviceState = {};
 
     var moveSpeed = 2;
     obj.translateX( moveSpeed );
+    var floor = 10;
+    if (obj.position.y < floor) {
+      obj.position.y = floor;
+    }
 
   }
 
@@ -223,10 +250,52 @@ globalDeviceState = {};
 
   }
 
+  function receivedInputID(inputID) {
+    state.inputID = inputID;
+    state.pause = true;
+    $('#ctrl-url').html('3ax.co/' + inputID);
+    console.log('received input ID from socket: ' + inputID);
+
+  }
+
+  function handleSocketResponses(data) {
+    // handle the controller input
+    // we haven't implemented a difference between buttonUp and buttonDown here but it's easy 
+    // if you send btnUp and btnDown events instead 
+    if (data.connection) {
+      deviceConnected()
+    } else if (data.btn) {
+    }
+    if (data.btn) {
+      btnPress(data.btn);
+    } else if (data.orientation) {
+      state.gamma = data.orientation.gamma;
+      state.alpha = data.orientation.alpha;
+      state.beta = data.orientation.beta;
+    }
+
+  }
+
+  function deviceConnected() {
+    $('#canvas-directions').html('Input device connected! Hold your phone in landscape mode like a video game controller and press Play to start.');
+  } 
+
+  function btnPress(btn) {
+    //only one button here
+    if (btn === 'play') {
+      state.pause = false;
+      $('#canvas-directions').hide();
+    } else if (btn === 'pause') {
+      state.pause = true;
+      $('#canvas-directions').html('-Paused-');
+      $('#canvas-directions').show();
+    } 
+  }
 
   function loop() {
-
-    moveWithController(player, globalDeviceState);
+    if (state.gamma && (!state.pause || !state.inputID)) {
+      moveWithController(player, state);
+    }
 
     var delta = clock.getDelta();
 

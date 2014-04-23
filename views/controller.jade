@@ -1,10 +1,14 @@
-extends layout
-
-block content
-  h1= title
-  p a simple API for using smartphones as controllers
-  .accel
-  .log
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet', href='//normalize-css.googlecode.com/svn/trunk/normalize.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
+  body
+    .ctrl-container
+      #btn-play.ctrl-btn.ctrl-center play
+      #btn-pause.ctrl-btn.ctrl-center.hidden pause
+    .ctrl-spacer
 
 
   head
