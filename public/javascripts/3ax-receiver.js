@@ -6,8 +6,8 @@
 
   USE:
   var threeax = new ThreeAX();
-  threeax.requestInputID('exampleAPIKey', function(res) {
-    receivedInputID(res);
+  threeax.requestStream('exampleAPIKey', function(res) {
+    receivedstream(res);
   });
   threeax.listen(function(data) {
     handleSocketResponses(data);
@@ -24,7 +24,7 @@ function ThreeAX() {
 
   var socket;
 
-  this.requestInputID = function(apiKey, callback) {
+  this.requestStream = function(apiKey, callback) {
 
     // establish socket connection
     socket = io.connect('');
@@ -32,34 +32,35 @@ function ThreeAX() {
       apiKey: apiKey
     };
     
-    // check local storage for an existing cookie and preferred inputID
+    // check local storage for an existing cookie and preferred stream
     // this is so the user doesn't have to reload their phone's browser unnecessarily 
-    // cookie prevents duplicate clients claiming the same input ID
+    // cookie prevents duplicate clients claiming the same stream ID
     if (typeof(Storage)!=="undefined") {
-      if (localStorage.inputID) {
-        req.inputID = localStorage.inputID;
-      }
-      if (localStorage.cookie) {
+      if (localStorage.stream && localStorage.cookie) {
+        req.stream = localStorage.stream;
         req.cookie = localStorage.cookie;
       }
-
     }
 
-    socket.on('inputID', function (data) {
-      localStorage.setItem("cookie",data.cookie);
-      // the server returns an inputID whether we specified one or not
+    socket.on('res', function (data) {
+      // the server returns a stream whether we specified one or not
       // if we specified, it will be the same one unless it was no longer available
-      localStorage.setItem("inputID",data.inputID);
-      callback(data.inputID);
+      // we also get a cookie so we can keep track of it for later, again, same cookie if we sent one up and it was valid
+      localStorage.setItem("stream",data.stream);
+      localStorage.setItem("cookie",data.cookie);
+      //send 
+      console.log(data);
+      callback(data.stream);
     });
 
+    console.log(req);
     socket.emit('registerWatcher', req);
   }
 
   // set up socket listeners
   this.listen = function(callback) {
     // controller state including button presses -- see API doc for formatting
-    socket.on('data', function (data) {
+    socket.on('prx', function (data) {
       callback(data);
     });
     socket.on('partnerDisconnect', function() {

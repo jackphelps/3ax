@@ -23,8 +23,8 @@
   console.log('running setup');
 
     // set up 3ax request and handlers
-    threeax.requestInputID('exampleAPIKey', function(response) {
-      receivedInputID(response);
+    threeax.requestStream('exampleAPIKey', function(response) {
+      receivedStream(response);
     });
 
     threeax.listen(function(data) {
@@ -252,10 +252,10 @@
 
   }
 
-  function receivedInputID(inputID) {
-    state.inputID = inputID;
-    $('#ctrl-url').html('3ax.co/' + inputID);
-    console.log('received input ID from socket: ' + inputID);
+  function receivedStream(stream) {
+    state.stream = stream;
+    $('#ctrl-url').html('3ax.co/' + stream);
+    console.log('received stream ID from socket: ' + stream);
 
   }
 
@@ -304,7 +304,7 @@
   }
 
   function loop() {
-    if (state.gamma && (!state.pause || !state.inputID)) {
+    if (state.gamma && (!state.pause || !state.stream)) {
       moveWithController(player, state);
     }
 

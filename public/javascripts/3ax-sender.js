@@ -14,8 +14,8 @@
 
   //establish socket connection
   var socket = io.connect('');
-  var inputID = $(location).attr('pathname').replace('/','');
-  socket.emit('registerInput', {inputID: inputID});
+  var stream = $(location).attr('pathname').replace('/','');
+  socket.emit('registerDevice', {stream: stream});
 
   //start looking for device inputs
   $('.accel').html('no readings');
@@ -23,7 +23,6 @@
     // some computers without phone-style orientation events will still trigger the ondeviceorientation callback, 
     // so let's check to make sure we have the right type of data
     var data = {
-      inputID: inputID,
       orientation: {
         gamma: Math.round(event.gamma),
         alpha: Math.round(event.alpha),
@@ -32,26 +31,26 @@
     };
 
     // send an absurd number of updates
-    socket.emit('data', data);
+    socket.emit('prx', data);
   }
 
   //set up buttons
   $('#btn-play').click(function() {
     var data = {
-      inputID:inputID,
+      stream:stream,
       btn:'play'
     }
-    socket.emit('data',data);
+    socket.emit('prx',data);
     $('#btn-play').addClass('hidden');
     $('#btn-pause').removeClass('hidden');
   });
 
   $('#btn-pause').click(function() {
     var data = {
-      inputID:inputID,
+      stream:stream,
       btn:'pause'
     }
-    socket.emit('data',data);
+    socket.emit('prx',data);
     $('#btn-pause').addClass('hidden');
     $('#btn-play').removeClass('hidden');
   });
