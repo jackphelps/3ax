@@ -212,7 +212,7 @@
   function moveWithController(obj, deviceData) {
     if (deviceData.gamma && deviceData.alpha && deviceData.beta) {
 
-      pitchspeed = 0.7;
+      pitchspeed = 1;
       pitchbreak = 45;
       pitchrange = 45;
       obj.rotateOnAxis( 
@@ -220,7 +220,7 @@
         (Math.abs(deviceData.gamma) - pitchbreak) / pitchrange * pitchspeed * Math.PI / 180
       );
 
-      rollspeed = 1.3;
+      rollspeed = 3;
       rollbreak = 0;
       rollrange = 90;
       obj.rotateOnAxis( 
@@ -263,16 +263,19 @@
     // handle the controller input
     // we haven't implemented a difference between buttonUp and buttonDown here but it's easy 
     // if you send btnUp and btnDown events instead 
-    if (data.connection) {
+    if (data.partnerConnect) {
+      console.log('Input device connected');
       deviceConnected()
     }
     if (data.btn) {
       btnPress(data.btn);
-    } else if (data.orientation) {
+    }
+    if (data.orientation) {
       state.gamma = data.orientation.gamma;
       state.alpha = data.orientation.alpha;
       state.beta = data.orientation.beta;
-    } else if (data.disconnect) {
+    }
+    if (data.partnerDisconnect) {
       console.log('Input device disconnected');
       pause();
     }

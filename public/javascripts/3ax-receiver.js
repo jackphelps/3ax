@@ -63,8 +63,11 @@ function ThreeAX() {
     socket.on('prx', function (data) {
       callback(data);
     });
+    socket.on('partnerConnect', function() {
+      callback({partnerConnect:true});
+    });
     socket.on('partnerDisconnect', function() {
-      callback({disconnect:true});
+      callback({partnerDisconnect:true});
     });
 
   };
