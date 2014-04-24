@@ -5,7 +5,7 @@
 * Author: Jack Phelps
 * License: coming soon, see below
 
-3ax is a simple API that makes smartphone inputs -- such as accelerometer motion -- available to 3rd party applications. Developers can build browser games or interactive apps that can easily be controlled by the user's phone. 
+3ax (as in 3-axis) is a simple API that makes smartphone inputs -- such as accelerometer motion -- available to 3rd party applications. Developers can build browser games or interactive apps that can easily be controlled by the user's phone. 
 
 Actually, right now it's not so much API as example, because I'm not really offering it as a service yet. But if you want to try it out, you can use the example key, and if you want to put some load on it you can just fork it and run it on heroku easily yourself. Get in touch if you 
 
@@ -26,11 +26,11 @@ Haven't really profiled performance yet but think it's going to be fairly good (
 
 Rough API -- not done yet
 =======================
-route                            | description (response) 
----------------------------------|--------------------------
-/{api-key}/controller/{id}       | get a snapshot of the data (JSON device data)
-/{api-key}/controller/new/{int}  | create a new controller of type {int} (ID of controller)
-/{api-key}/delete                | delete a controller created by your API api-key (delete controller at ID)
+route                             | description (response) 
+----------------------------------|--------------------------
+`/{api-key}/controller/{id}`      | get a snapshot of the data (JSON device data)
+`/{api-key}/controller/new/{int}` | create a new controller of type {int} (ID of controller)
+`/{api-key}/delete`               | delete a controller created by your API api-key (delete controller at ID)
 
 For the future
 =======================
