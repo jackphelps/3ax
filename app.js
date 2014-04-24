@@ -87,6 +87,8 @@ io.sockets.on('connection', function (socket) {
       if (liveListeners.hasOwnProperty(data.inputID)) {
         console.log('input device connected: ' + data);
         var listener = liveListeners[data.inputID];
+        liveInputs[data.inputID] = socket.id;
+        liveInputs[socket.id] = data.inputID;
         io.sockets.socket(listener).emit('data', {connection:true});
       }
     });
@@ -111,6 +113,7 @@ io.sockets.on('connection', function (socket) {
           inputIDs[inputID] = cookie;
         }
         liveListeners[res.inputID] = socket.id;
+        liveListeners[socket.id] = res.inputID;
         socket.emit('inputID', res);
       } else {
         // not valid API key, let's tell them that
@@ -126,6 +129,16 @@ io.sockets.on('connection', function (socket) {
         io.sockets.socket(listener).emit('data', data);
       };
     });
+
+    socket.on('disconnect', function(data) {
+      console.log(data + ' ' + socket);
+      if (liveInputs.hasOwnProperty(socket.id)) {
+        var listener = liveListeners[liveInputs[socket.id]];
+        io.sockets.socket(listener).emit('partnerDisconnect');
+      }
+
+    });
+
 });
 
 function generateRandomString(chars) {

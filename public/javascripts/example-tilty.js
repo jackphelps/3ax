@@ -190,10 +190,13 @@
     player.position.y = 135;
     player.position.z = -50;
 
-      player.rotateOnAxis( 
-        (new THREE.Vector3(0,0,1)).normalize(), 
-        20 * Math.PI / 180
-      );
+    player.rotateOnAxis( 
+      (new THREE.Vector3(0,0,1)).normalize(), 
+      20 * Math.PI / 180
+    );
+
+    // make sure the game is paused to start
+    state.pause = true;
 
   }
 
@@ -251,7 +254,6 @@
 
   function receivedInputID(inputID) {
     state.inputID = inputID;
-    state.pause = true;
     $('#ctrl-url').html('3ax.co/' + inputID);
     console.log('received input ID from socket: ' + inputID);
 
@@ -263,7 +265,6 @@
     // if you send btnUp and btnDown events instead 
     if (data.connection) {
       deviceConnected()
-    } else if (data.btn) {
     }
     if (data.btn) {
       btnPress(data.btn);
@@ -271,6 +272,9 @@
       state.gamma = data.orientation.gamma;
       state.alpha = data.orientation.alpha;
       state.beta = data.orientation.beta;
+    } else if (data.disconnect) {
+      console.log('Input device disconnected');
+      pause();
     }
 
   }
@@ -282,13 +286,21 @@
   function btnPress(btn) {
     //only one button here
     if (btn === 'play') {
-      state.pause = false;
-      $('#canvas-directions').hide();
+      unpause();
     } else if (btn === 'pause') {
-      state.pause = true;
-      $('#canvas-directions').html('-Paused-');
-      $('#canvas-directions').show();
+      pause();
     } 
+  }
+
+  function pause() {
+    state.pause = true;
+    $('#canvas-directions').html('-Paused-');
+    $('#canvas-directions').show();
+  }
+
+  function unpause() {
+    state.pause = false;
+    $('#canvas-directions').hide();
   }
 
   function loop() {

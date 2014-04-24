@@ -62,6 +62,9 @@ function ThreeAX() {
     socket.on('data', function (data) {
       callback(data);
     });
+    socket.on('partnerDisconnect', function() {
+      callback({disconnect:true});
+    });
 
   };
 

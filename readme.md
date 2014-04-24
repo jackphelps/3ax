@@ -1,6 +1,6 @@
 3ax
 =======================
-* 3ax.co
+* [3ax.co](http://3ax.co)
 * http://github.com/jackphelps/3ax
 * Author: Jack Phelps
 * License: coming soon, see below
