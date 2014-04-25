@@ -15,8 +15,9 @@ router.get('/about', function(req, res) {
 // This route has to go last, else the router will assume /about or whatever are input IDs
 
 // GET device interface page -- for users to access with their devices
-router.get('/:input_id', function(req, res) {
-  res.render('controller', { title: req.params.input_id});
+//controller is a confusing word here, sorry -- it is the game controller displayed on the phone/device
+router.get('/:stream_id', function(req, res) {
+  res.render('controller', { title: req.params.stream_id});
 });
 
 

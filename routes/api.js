@@ -11,7 +11,7 @@ router.route('/input')
 
   });
 
-router.route('/input/:input_id')
+router.route('/input/:stream_id')
   
   // read
   .get(function(req, res) {
