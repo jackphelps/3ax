@@ -63,4 +63,4 @@ var server = app.listen(app.get('port'), function() {
 });
 
 // add socket listeners
-var io = require('./lib/socketHandler').listen(server, {log:true});
+var io = require('./lib/socketHandler').listen(server, {log:false});
