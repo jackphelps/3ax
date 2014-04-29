@@ -19,6 +19,7 @@
     "debug": "~0.7.4",
     "jade": "~1.3.0",
     "nodemon": "latest",
-    "socket.io": "latest"
+    "socket.io": "latest",
+    "redis": "latest"
   }
 }

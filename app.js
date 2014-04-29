@@ -57,11 +57,10 @@ app.use(function(err, req, res, next) {
     });
 });
 
-
-app.set('port', process.env.PORT || 3000);
+app.set('port', process.env.PORT || 5000);
 var server = app.listen(app.get('port'), function() {
   debug('Express server listening on port ' + server.address().port);
 });
 
 // add socket listeners
-var io = require('./lib/socketHandler').listen(server, {log:false});
+var io = require('./lib/socketHandler').listen(server, {log:true});
